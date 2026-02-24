@@ -49,6 +49,7 @@ def predict_submission(
     submission: pd.DataFrame | None = None,
     cache_m: pd.DataFrame | None = None,
     cache_w: pd.DataFrame | None = None,
+    verbose: bool = False,
 ) -> pd.DataFrame:
     """
     Generate Pred for each ID in the Stage 2 sample (or provided submission).
@@ -60,11 +61,18 @@ def predict_submission(
     if cache_w is None:
         cache_w = build_strength_cache("W", RECENT_SEASONS)
 
+    n = len(submission)
     preds = []
-    for id_str in submission["ID"]:
+    last_pct = -1
+    for i, id_str in enumerate(submission["ID"]):
         _, team_low, team_high = parse_submission_id(id_str)
         pred = predict_one(team_low, team_high, cache_m, cache_w)
         preds.append(pred)
+        if verbose:
+            pct = (i + 1) * 100 // n
+            if pct >= last_pct + 10 or i + 1 == n:
+                print(f"  {pct}% ({i + 1:,} / {n:,})", flush=True)
+                last_pct = pct
 
     out = submission[["ID"]].copy()
     out["Pred"] = preds

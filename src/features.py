@@ -69,7 +69,16 @@ def team_season_stats(gender: str, season: int) -> pd.DataFrame:
     return teams
 
 
-def build_strength_cache(gender: str, seasons: list[int]) -> pd.DataFrame:
+def build_strength_cache(
+    gender: str, seasons: list[int], verbose: bool = False
+) -> pd.DataFrame:
     """Stack team-season stats for multiple seasons."""
-    parts = [team_season_stats(gender, s) for s in seasons]
-    return pd.concat(parts, ignore_index=True)
+    parts = []
+    for s in seasons:
+        if verbose:
+            print(f"    {gender} season {s}...", flush=True)
+        parts.append(team_season_stats(gender, s))
+    out = pd.concat(parts, ignore_index=True)
+    if verbose:
+        print(f"    → {len(out):,} rows", flush=True)
+    return out

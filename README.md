@@ -13,13 +13,84 @@ Forecast the 2026 NCAA Men's and Women's basketball tournaments for [Kaggle Marc
 
 Uses [uv](https://docs.astral.sh/uv/) for dependencies (no pip).
 
+Data is expected in `datasets/` (e.g. from the competition or unzipped from `data/march-machine-learning-mania-2026.zip` into `datasets/`).
+
+## Steps (with terminal progress)
+
+Run these in order. Example logs show what you should see.
+
+**Step 1 — Sync dependencies**
+
 ```bash
 uv sync
 ```
 
-Data is expected in `datasets/` (e.g. from the competition or unzipped from `data/march-machine-learning-mania-2026.zip` into `datasets/`).
+<details>
+<summary>Example output</summary>
 
-## Baseline
+```
+Using Python 3.12.x
+Resolved 3 packages in 123ms
+Installed 3 packages in 45ms
+  + numpy 1.26.x
+  + pandas 2.2.x
+  + march-ml-mania 0.1.0 (from .)
+```
+
+</details>
+
+**Step 2 — Run baseline and generate submission**
+
+```bash
+uv run python run_baseline.py
+```
+
+<details>
+<summary>Example output</summary>
+
+```
+Saved 132134 predictions to output/submission.csv
+```
+
+</details>
+
+**Step 3 — (Optional) Git: push without large data**
+
+If you use git and keep data in `datasets/`, ensure `datasets/` is in `.gitignore` so large files (e.g. `MMasseyOrdinals.csv` >100 MB) are not committed. To stop tracking them after a mistaken add:
+
+```bash
+git rm -r --cached datasets/
+git commit -m "Remove large dataset files from tracking"
+```
+
+Then rewrite history so the large file never appears in any commit (required for GitHub’s 100 MB limit), then push:
+
+```bash
+git checkout --orphan clean-main
+git add -A
+git commit -m "Initial commit (no datasets)"
+git branch -D main
+git branch -m main
+git push -u origin main --force
+```
+
+<details>
+<summary>Example output (push)</summary>
+
+```
+Enumerating objects: 42, done.
+Counting objects: 100% (42/42), done.
+...
+To https://github.com/youruser/March-ML-Mania.git
+ + main -> main (forced update)
+Branch 'main' set up to track remote branch 'main' from 'origin'.
+```
+
+</details>
+
+---
+
+## Baseline (short)
 
 ```bash
 uv run python run_baseline.py
